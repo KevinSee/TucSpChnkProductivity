@@ -13,7 +13,7 @@ institute:
   - wdfw: Washington Department of Fish & Wildlife
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: 
-    wdfwTemplates::wdfw_html_format2:
+    bookdown::html_document2:
       fig_caption: yes
       fig_height: 5
       fig_width: 6
@@ -23,33 +23,33 @@ output:
         collapsed: yes
         smooth_scroll: yes
       pandoc_args:
-      - --lua-filter=templates/scholarly-metadata.lua
-      - --lua-filter=templates/author-info-blocks.lua
-      - --lua-filter=templates/pagebreak.lua
+      - --lua-filter=../templates/scholarly-metadata.lua
+      - --lua-filter=../templates/author-info-blocks.lua
+      - --lua-filter=../templates/pagebreak.lua
     bookdown::pdf_document2:
       fig_caption: yes
       fig_height: 5
       fig_width: 6
       toc: yes
       pandoc_args:
-      - --lua-filter=templates/scholarly-metadata.lua
-      - --lua-filter=templates/author-info-blocks.lua
-      - --lua-filter=templates/pagebreak.lua
+      - --lua-filter=../templates/scholarly-metadata.lua
+      - --lua-filter=../templates/author-info-blocks.lua
+      - --lua-filter=../templates/pagebreak.lua
     bookdown::word_document2:
       fig_caption: yes
       fig_height: 6
       fig_width: 6
       toc: yes
-      reference_docx: "templates/WDFW Report Template.docx" # Insert path for the DOCX file
+      reference_docx: "../templates/WDFW Report Template.docx" # Insert path for the DOCX file
       always_allow_html: true
       pandoc_args:
-      - --lua-filter=templates/scholarly-metadata.lua
-      - --lua-filter=templates/author-info-blocks.lua
-      - --lua-filter=templates/pagebreak.lua
+      - --lua-filter=../templates/scholarly-metadata.lua
+      - --lua-filter=../templates/author-info-blocks.lua
+      - --lua-filter=../templates/pagebreak.lua
 bibliography:
   # - AUC.bib
   - references.bib
-csl: "templates/american-fisheries-society.csl" # Insert path for the bib-style
+csl: "../templates/american-fisheries-society.csl" # Insert path for the bib-style
 ---
 
 ```{r setup, echo = FALSE}
@@ -60,7 +60,7 @@ knitr::opts_chunk$set(
   echo = FALSE,
   # echo = TRUE,
   comment = "#>",
-  fig.path = here::here("analysis/figures/"),
+  fig.path = "../figures/",
   dpi = 600
 )
 ```
@@ -68,13 +68,15 @@ knitr::opts_chunk$set(
 ```{r packages}
 # load these packages
 library(tidyverse)
+library(here)
 library(readxl)
 library(janitor)
+library(corrr)
 library(mgcv)
+library(broom)
 library(tidygam)
 library(gratia)
 library(boot)
-library(ggrepel)
 library(colorspace)
 library(ggpubr)
 library(kableExtra)
@@ -451,95 +453,6 @@ ggarrange(ea_p1 +
   annotate_figure(bottom = "Brood Year")
 ```
 
-```{r redds-smolts, fig.height = 4, fig.width = 4, fig.cap = "Plot of redds vs. smolts, colored by year."}
-# color
-# redd_smolt_p <- 
-#   mod_df |>
-#   ggplot(aes(x = number_redds,
-#              y = number_smolts)) +
-#   # geom_smooth(data = mod_df |>
-#   #               filter(brood_yr < 2007),
-#   #             method = lm,
-#   #             se = T,
-#   #             alpha = 0.3,
-#   #             fill = "lightpink",
-#   #             color = "darkred") +
-#   # geom_smooth(data = mod_df |>
-#   #               filter(brood_yr >= 2007),
-#   #             method = lm,
-#   #             se = T,
-#   #             alpha = 0.3,
-#   #             fill = "lightblue",
-#   #             color = "blue") +
-#   geom_point(aes(color = smolts_redd),
-#              size = 3) +
-#   geom_text_repel(aes(label = brood_yr),
-#                   max.overlaps = 40,
-#                   color = "gray50") +
-#   scale_color_continuous_sequential("Hawaii",
-#                                     name = "Smolts / redd") +
-#   theme(legend.position = "bottom") +
-#   scale_y_continuous(labels = scales::label_comma()) +
-#   labs(x = "Redds",
-#        y = "Smolts")
-
-
-# colored by emigration year
-redd_smolt_p <- 
-  mod_df |>
-  ggplot(aes(x = number_redds,
-             y = number_smolts)) +
-  # geom_smooth(data = mod_df |>
-  #               filter(brood_yr >= 2007),
-  #             method = lm,
-  #             se = T,
-  #             alpha = 0.3,
-  #             fill = "lightpink",
-  #             color = "darkred") +
-  # geom_smooth(data = mod_df |>
-  #               filter(brood_yr < 2007),
-  #             method = lm,
-  #             se = T,
-  #             alpha = 0.3,
-  #             fill = "lightblue",
-  #             color = "blue") +
-  # geom_smooth(span = 0.9,
-  #             fill = "gray70") +
-  geom_point(aes(color = emigration_yr),
-             size = 3) +
-  scale_color_continuous_sequential("Hawaii",
-                                    name = "Smolt Year") +
-  theme(legend.position = "bottom") +
-  scale_y_continuous(labels = scales::label_comma()) +
-  labs(x = "Redds",
-       y = "Smolts")
-
-
-
-# # black & white
-# redd_smolt_p <-
-#   mod_df |>
-#   ggplot(aes(x = number_redds,
-#              y = number_smolts)) +
-#   geom_point(aes(fill = smolts_redd),
-#              color = "gray70",
-#              shape = 21,
-#              size = 3) +
-#   geom_text_repel(aes(label = brood_yr),
-#                   max.overlaps = 40,
-#                   color = "gray50") +
-#   scale_fill_continuous_sequential("Grays",
-#                                    name = "Smolts / redd") +
-#   theme(legend.position = "bottom") +
-#   scale_y_continuous(labels = scales::label_comma()) +
-#   labs(x = "Redds",
-#        y = "Smolts")
-# 
-
-redd_smolt_p
-
-```
-
 # Methods - Data Analysis
 
 ## Covariates
@@ -614,65 +527,6 @@ draw(gam_mod_1,
 #      cex = 1)
 ```
 
-```{r dredge, eval = F}
-
-dd <- dredge(gam_mod_1,
-             fixed = "redds",
-             extra = c("R^2",
-                       "adjR^2"))
-
-dd %>%
-  sw() |> 
-  as_tibble(rownames = "covariate") |> 
-  mutate(across(covariate,
-                ~ str_split_i(., "\\,", 1)),
-         across(covariate,
-                ~ str_remove(., "^s\\("))) |> 
-  mutate(across(covariate,
-                ~ fct_reorder(., value))) |> 
-  ggplot(aes(x = value,
-             y = covariate)) +
-  geom_col()
-
-dd |> 
-  arrange(desc(`adjR^2`)) |> 
-  filter(delta < 4) |> 
-  # sw()
-  head(10)
-
-dd |> 
-  filter(delta < 4) |> 
-  arrange(desc(`adjR^2`)) |> 
-  # sw()
-  head(10)
-
-
-dd %>%
-  filter(cumsum(weight) <= 0.95) |> 
-  sw()
-
-dd |> 
-  filter(delta < 4)
-
-
-dd |> 
-  filter(delta < 7) |> 
-  sw()
-
-
-# mod_avg <-
-#   model.avg(dd,
-#             subset = cumsum(weight) <= 0.95,
-#             fit = T)
-
-# gam_mod_1a <-
-#   get.models(dd,
-#              subset = cumsum(weight) <= 0.95) |> 
-#   pluck(3)
-
-```
-
-
 ```{r smolt-capacity}
 # Ricker parameter estimates (R ~ alpha * S * exp(-b * S), a = log(alpha))
 # carrying capacity of redds
@@ -707,12 +561,6 @@ init_form <-
                 number_smolts - suc_w_jacks) ~
             s(mean_smolt_length, k = 4, bs = "tp", m = 2) +
             s(phos, k = 4, bs = "tp", m = 2) +
-            # phos:stray_prop +
-            # s(mean_rkm, k = 4, bs = "tp") +
-            # s(sd_rkm, k = 4, bs = "tp") +
-            # s(mean_rkm, phos, k = 4) +
-            # s(mean_smolt_length, mean_rkm, k = 4) +
-            # s(mean_smolt_length, phos, k = 4) +
             s(brood_yr, k = 20, bs = "tp"))
 
 
@@ -734,14 +582,12 @@ gam_mod_2b <-
 
 gam_mod_2c <-
   gam(update(init_form,
-       # log(total_rps) ~ redds + .),
        log(total_rps) ~ spawners + .),
       data = mod_df_2,
       method = "REML")
 
 gam_mod_2d <-
   gam(update(init_form,
-       # log(adult_rps) ~ redds + .),
        log(adult_rps) ~ spawners + .),
       data = mod_df_2,
       method = "REML")
@@ -846,50 +692,6 @@ ret_capacity <-
 
 ```
 
-
-```{r glm-fits, eval = F, echo = F}
-library(lme4)
-glm_mod_2a <-
-  glm(cbind(suc_w_jacks,
-              number_smolts - suc_w_jacks) ~
-          mean_smolt_length +
-          phos +
-          mean_rkm,
-        family = binomial,
-        data = mod_df_2)
-
-glm_mod_2b <-
-  glm(cbind(suc_wo_jacks,
-            number_smolts - suc_wo_jacks) ~
-        mean_smolt_length +
-        phos,
-      family = binomial,
-      data = mod_df_2)
-
-lm_mod_2c <-
-  lm(log(total_rps) ~ 
-       redds +
-       mean_smolt_length + 
-       phos,
-     data = mod_df_2)
-
-lm_mod_2d <-
-  lm(log(adult_rps) ~ 
-       redds +
-       mean_smolt_length + 
-       phos,
-     data = mod_df_2)
-
-
-
-library(DescTools)
-PseudoR2(glm_mod_2b,
-         # which = "McFaddenAdj")
-         which = "McKelveyZavoina")
-# which = "VeallZimmermann")
-# which = "AldrichNelson")
-```
-
 # Results
 
 Diagnostic checks for all models were sufficient to ensure we did not underfit any models by overly restricting the number of knots in the various splines. The summary statistics for each model, including the pseudo-$R^2$ value and the percent of deviance explained by each model are provided in Table \@ref(tab:r2-tab). All models had fairly high pseudo-$R^2$ values (range of 0.61 – 0.87) and explained a high proportion of the variance (75-91%). To examine the results of the GAMs, we plotted the marginal smoothing plots of each covariate to display how the model predictions change as each covariate shifts, holding the others at a constant value. 
@@ -938,7 +740,6 @@ broom::tidy(gam_mod_1,
   kable_styling()
 ```
 
-
 ```{r sr-edf, eval = T}
 broom::tidy(gam_mod_1) |> 
   clean_names("title") |> 
@@ -967,7 +768,7 @@ p1 <-
   geom_rug(data = mod_df_1,
            aes(y = NULL)) +
   geom_vline(xintercept = smolt_capacity$redds,
-             color = "darkgray",
+             color = "gray20",
              linetype = 2) +
   # geom_hline(yintercept = smolt_capacity$smolts,
   #            color = "blue",
@@ -1034,12 +835,12 @@ p3 <-
                      transform = "log") +
   labs(y = "Smolts / Redd",
        x = "Mean redd RKM") +
-  geom_vline(xintercept = 40,
-             color = "gray20",
-             linetype = 2) +
-  geom_vline(xintercept = 74,
-             color = "gray20",
-             linetype = 2) +
+  # geom_vline(xintercept = 40,
+  #            color = "gray20",
+  #            linetype = 2) +
+  # geom_vline(xintercept = 74,
+  #            color = "gray20",
+  #            linetype = 2) +
   geom_vline(xintercept = 59,
              color = "gray20",
              linetype = 2)
@@ -1124,102 +925,12 @@ p6 <-
   labs(y = "Smolts / Redd",
        x = "pHOS")
 
-
-# predict_gam(gam_mod_1,
-#             length_out = 50,
-#             # values = list(phos = median(mod_df_1$phos)),
-#             series = c("mean_rkm", "sd_rkm"),
-#             tran_fun = exp) |>
-#   ggplot(aes(x = mean_rkm,
-#              y = sd_rkm,
-#              fill = smolts_redd)) +
-#   geom_raster() +
-#   scale_fill_continuous_diverging(palette = "Purple-Green",
-#                                   mid = 150,
-#                                   name = "Smolts/Redd") +
-#   theme(legend.position = "bottom") +
-#   labs(x = "Mean Redd RKM",
-#        y = "SD Redd RKM")
-
 ```
-
-```{r mod-1-plots, eval = F}
-sm <-
-  smooth_estimates(gam_mod_1) |> 
-  add_confint() |> 
-  pivot_longer(cols = mean_rkm:emigration_yr,
-               names_to = "covar",
-               values_to = "value") |> 
-  filter(!is.na(value))
-
-res <-
-  mod_df_1 |> 
-  select(-median_rkm) |> 
-  add_partial_residuals(gam_mod_1) |> 
-  pivot_longer(cols = c(emigration_yr,
-                        redds,
-                        mean_rkm,
-                        sd_rkm,
-                        phos,
-                        stray_prop,
-                        `s(mean_rkm)`,
-                        `s(sd_rkm)`,
-                        `s(phos)`,
-                        `s(emigration_yr)`)) |> 
-  mutate(covar = name,
-         across(covar,
-                ~ str_remove(., "^s\\(")),
-         across(covar,
-                ~ str_remove(., "\\)$")),
-         type = if_else(str_detect(name, "^s\\("),
-                        "resid",
-                        "obs")) |> 
-  select(-name) |> 
-  pivot_wider(names_from = type,
-              values_from = value) |> 
-  filter(covar %in% unique(sm$covar))
-
-sm |> 
-  ggplot() +
-  geom_rug(data = res,
-           aes(x = obs),
-           sides = "b") +
-  geom_ribbon(aes(x = value,
-                  ymin = .lower_ci,
-                  ymax = .upper_ci),
-              color = NA,
-              alpha = 0.2) +
-  geom_point(data = res,
-             aes(x = obs,
-                 y = resid),
-             cex = 1.5,
-             color = "steelblue3") +
-  geom_line(aes(x = value,
-                y = .estimate),
-            lwd = 1.2) +
-  facet_wrap(~ covar,
-             scales = "free_x")
-
-
-```
-
 
 Figure \@ref(fig:prod-marg) shows the marginal effects of each covariate on predicted smolts per redd, assuming the others are fixed at their mean values. Although the mean redd rkm showed little effect, the smoothed spline of the standard deviation of redd rkm suggest that higher standard deviations (i.e., more dispersed redds) leads to higher predicted values of smolts per redd.  The effect of pHOS suggests that higher levels of pHOS are associated with higher productivity, although when hatchery origin spawners are made up of a higher proportion of out-of-basin strays, that effect is dampened. The estimated smolt capacity, based on the fitted Ricker curve (Figure \@ref(fig:prod-marg)A) is `r prettyNum(round(smolt_capacity$smolts), big.mark = ",")` smolts, which occurs when there are `r round(smolt_capacity$redds)` redds in the system.
 
 
-```{r prod-marg, fig.height=7, fig.cap = "Predicted marginal effects of each covariate in the smolts/redd GAM (other covariates are fixed at mean values). Plots B-F have log-transformed the y-axis to improve visability. A shows the effect of redds on smolts, B shows the effect of the mean redd river kilometer, C shows the effect of the standard deviation of redd river kilometer, D shows the trend associated with emigration year, and E shows the effect of pHOS and proportion of out-of-basin stray hatchery fish. Gray ribbons depict 95% confidence intervals, while tick marks along the x-axis depict the observed values. The vertical dashed line in A represents the estimated value of redds that lead to the maximum number of smolts. The vertical dashed lines in B represent, from left to right, Marengo, the weir and the beginning of the wilderness area."}
-
-# ggarrange(p1, 
-#           p1a, 
-#           p3, 
-#           p4, 
-#           p5, 
-#           # p2, 
-#           p6,
-#           nrow = 3,
-#           ncol = 2,
-#           label.x = 0.1,
-#           labels = "AUTO")
+```{r prod-marg, fig.height=7, fig.cap = "Predicted marginal effects of each covariate in the smolts/redd GAM (other covariates are fixed at mean values). Plots B-F have log-transformed the y-axis to improve visability. A shows the effect of redds on smolts, B shows the effect of the mean redd river kilometer, C shows the effect of the standard deviation of redd river kilometer, D shows the trend associated with emigration year, and E shows the effect of pHOS and proportion of out-of-basin stray hatchery fish. Gray ribbons depict 95% confidence intervals, while tick marks along the x-axis depict the observed values. The vertical dashed line in A represents the estimated value of redds that lead to the maximum number of smolts. The vertical dashed line in B represents the location of the weir."}
 
 bottom_rows <-
   ggarrange(p3 +
@@ -1388,10 +1099,6 @@ length_p2 <-
                linetype = NULL,
                color = NULL,
                fill = NULL)) +
-  # geom_point(data = mod_df_2,
-  #            shape = 1) +
-  # geom_hline(yintercept = 1,
-  #            linetype = 2) +
   scale_color_discrete_qualitative(palette = colorspace_palette,
                                    name = "Model") +
   scale_fill_discrete_qualitative(palette = colorspace_palette,
@@ -1399,15 +1106,6 @@ length_p2 <-
   scale_linetype_manual(values = c("Adult" = 1,
                                    "Total" = 2),
                         name = "Model") +
-  # scale_color_discrete_sequential(palette = "Grays",
-  #                                 name = "Model",
-  #                                 l1 = 30,
-  #                                 l2 = 60) +
-  # scale_fill_discrete_sequential(palette = "Grays",
-  #                                name = "Model",
-  #                                l1 = 30,
-  #                                l2 = 60) +
-  # coord_cartesian(ylim = c(0, 10)) +
   labs(y = "Returns /\nSpawner",
        x = "Mean smolt length (mm)")
 
@@ -1440,9 +1138,6 @@ phos_p1 <-
                linetype = NULL,
                color = NULL,
                fill = NULL)) +
-  # geom_point(data = mod_df_2,
-  #            shape = 1) +
-  # scale_y_continuous(limits = c(0, 0.08)) +
   scale_color_discrete_qualitative(palette = colorspace_palette,
                                    name = "Model") +
   scale_fill_discrete_qualitative(palette = colorspace_palette,
@@ -1450,14 +1145,6 @@ phos_p1 <-
   scale_linetype_manual(values = c("Adult" = 1,
                                    "Total" = 2),
                         name = "Model") +
-  # scale_color_discrete_sequential(palette = "Grays",
-  #                                 name = "Model",
-  #                                 l1 = 30,
-  #                                 l2 = 60) +
-  # scale_fill_discrete_sequential(palette = "Grays",
-  #                                name = "Model",
-  #                                l1 = 30,
-  #                                l2 = 60) +
   labs(y = "SAR",
        x = "pHOS")
 
@@ -1489,10 +1176,6 @@ phos_p2 <-
                linetype = NULL,
                color = NULL,
                fill = NULL)) +
-  # geom_point(data = mod_df_2,
-  #            shape = 1) +
-  # geom_hline(yintercept = 1,
-  #            linetype = 2) +
   scale_color_discrete_qualitative(palette = colorspace_palette,
                                    name = "Model") +
   scale_fill_discrete_qualitative(palette = colorspace_palette,
@@ -1500,14 +1183,6 @@ phos_p2 <-
   scale_linetype_manual(values = c("Adult" = 1,
                                    "Total" = 2),
                         name = "Model") +
-  # scale_color_discrete_sequential(palette = "Grays",
-  #                                 name = "Model",
-  #                                 l1 = 30,
-  #                                 l2 = 60) +
-  # scale_fill_discrete_sequential(palette = "Grays",
-  #                                name = "Model",
-  #                                l1 = 30,
-  #                                l2 = 60) +
   labs(y = "Returns /\nSpawner",
        x = "pHOS")
 
@@ -1536,9 +1211,6 @@ by_p1 <-
               alpha = 0.3) +
   geom_point() +
   geom_line() +
-  # geom_point(data = mod_df_2,
-  #            shape = 1) +
-  # scale_y_continuous(limits = c(0, 0.08)) +
   scale_color_discrete_qualitative(palette = colorspace_palette,
                                    name = "Model") +
   scale_fill_discrete_qualitative(palette = colorspace_palette,
@@ -1546,14 +1218,6 @@ by_p1 <-
   scale_linetype_manual(values = c("Adult" = 1,
                                    "Total" = 2),
                         name = "Model") +
-  # scale_color_discrete_sequential(palette = "Grays",
-  #                                 name = "Model",
-  #                                 l1 = 30,
-  #                                 l2 = 60) +
-  # scale_fill_discrete_sequential(palette = "Grays",
-  #                                name = "Model",
-  #                                l1 = 30,
-  #                                l2 = 60) +
   labs(y = "SAR",
        x = "Brood Year")
 
@@ -1562,18 +1226,15 @@ by_p2 <-
   predict_gam(gam_mod_2c,
             length_out = diff(range(mod_df_2$brood_yr)),
             series = "brood_yr",
-            # values = list(brood_yr = unique(mod_df_2$brood_yr)),
             tran_fun = exp) |>
   rename(rps = total_rps) |> 
   mutate(model = "Total") |> 
   bind_rows(predict_gam(gam_mod_2d,
                         length_out = diff(range(mod_df_2$brood_yr)),
                         series = "brood_yr",
-                        # values = list(brood_yr = unique(mod_df_2$brood_yr)),
                         tran_fun = exp) |>
               rename(rps = adult_rps) |> 
               mutate(model = "Adult")) |> 
-  # filter(brood_yr %in% unique(mod_df_2$brood_yr)) |> 
   ggplot(aes(x = brood_yr,
              y = rps,
              linetype = model,
@@ -1592,179 +1253,8 @@ by_p2 <-
   scale_linetype_manual(values = c("Adult" = 1,
                                    "Total" = 2),
                         name = "Model") +
-  # scale_color_discrete_sequential(palette = "Grays",
-  #                                 name = "Model",
-  #                                 l1 = 30,
-  #                                 l2 = 60) +
-  # scale_fill_discrete_sequential(palette = "Grays",
-  #                                name = "Model",
-  #                                l1 = 30,
-  #                                l2 = 60) +
   labs(y = "Returns /\nSpawner",
        x = "Brood Year")
-```
-
-
-```{r, eval = F}
-m_rkm_p1 <-
-  predict_gam(gam_mod_2a,
-              length_out = 50,
-              series = "mean_rkm",
-              tran_fun = inv.logit) |>
-  rename(sar = `cbind(suc_w_jacks, number_smolts - suc_w_jacks)`) |> 
-  mutate(model = "Total") |> 
-  bind_rows(predict_gam(gam_mod_2b,
-                        length_out = 50,
-                        series = "mean_rkm",
-                        tran_fun = inv.logit) |> 
-              rename(sar = `cbind(suc_wo_jacks, number_smolts - suc_wo_jacks)`) |> 
-              mutate(model = "Adult")) |> 
-  ggplot(aes(x = mean_rkm,
-             y = sar,
-             linetype = model,
-             color = model,
-             fill = model)) + 
-  geom_ribbon(aes(ymin = lower_ci,
-                  ymax = upper_ci),
-              color = NA,
-              alpha = 0.3) +
-  geom_point() +
-  geom_line() +
-  # geom_point(data = mod_df_2,
-  #            shape = 1) +
-  # scale_y_continuous(limits = c(0, 0.08)) +
-  scale_color_discrete_qualitative(palette = colorspace_palette,
-                                   name = "Model") +
-  scale_fill_discrete_qualitative(palette = colorspace_palette,
-                                  name = "Model") +  
-  scale_linetype_manual(values = c("Adult" = 1,
-                                   "Total" = 2),
-                        name = "Model") +
-  # scale_color_discrete_sequential(palette = "Grays",
-  #                                 name = "Model",
-  #                                 l1 = 30,
-  #                                 l2 = 60) +
-  # scale_fill_discrete_sequential(palette = "Grays",
-  #                                name = "Model",
-  #                                l1 = 30,
-  #                                l2 = 60) +
-  labs(y = "SAR",
-       x = "Mean RKM of Redds")
-
-m_rkm_p2 <-
-  predict_gam(gam_mod_2c,
-              length_out = 50,
-              series = "mean_rkm",
-              tran_fun = exp) |>
-  rename(rps = total_rps) |> 
-  mutate(model = "Total") |> 
-  bind_rows(predict_gam(gam_mod_2d,
-                        length_out = 50,
-                        series = "mean_rkm",
-                        tran_fun = exp) |> 
-              rename(rps = adult_rps) |> 
-              mutate(model = "Adult")) |> 
-  ggplot(aes(x = mean_rkm,
-             y = rps,
-             linetype = model,
-             color = model,
-             fill = model)) + 
-  geom_ribbon(aes(ymin = lower_ci,
-                  ymax = upper_ci),
-              color = NA,
-              alpha = 0.3) +
-  geom_point() +
-  geom_line() +
-  scale_color_discrete_qualitative(palette = colorspace_palette,
-                                   name = "Model") +
-  scale_fill_discrete_qualitative(palette = colorspace_palette,
-                                  name = "Model") +  
-  scale_linetype_manual(values = c("Adult" = 1,
-                                   "Total" = 2),
-                        name = "Model") +
-  labs(y = "Returns /\nSpawner",
-       x = "Mean RKM of Redds")
-
-sd_rkm_p1 <-
-  predict_gam(gam_mod_2a,
-              length_out = 50,
-              series = "sd_rkm",
-              tran_fun = inv.logit) |>
-  rename(sar = `cbind(suc_w_jacks, number_smolts - suc_w_jacks)`) |> 
-  mutate(model = "Total") |> 
-  bind_rows(predict_gam(gam_mod_2b,
-                        length_out = 50,
-                        series = "sd_rkm",
-                        tran_fun = inv.logit) |> 
-              rename(sar = `cbind(suc_wo_jacks, number_smolts - suc_wo_jacks)`) |> 
-              mutate(model = "Adult")) |> 
-  ggplot(aes(x = sd_rkm,
-             y = sar,
-             linetype = model,
-             color = model,
-             fill = model)) + 
-  geom_ribbon(aes(ymin = lower_ci,
-                  ymax = upper_ci),
-              color = NA,
-              alpha = 0.3) +
-  geom_point() +
-  geom_line() +
-  # geom_point(data = mod_df_2,
-  #            shape = 1) +
-  # scale_y_continuous(limits = c(0, 0.08)) +
-  scale_color_discrete_qualitative(palette = colorspace_palette,
-                                   name = "Model") +
-  scale_fill_discrete_qualitative(palette = colorspace_palette,
-                                  name = "Model") +  
-  scale_linetype_manual(values = c("Adult" = 1,
-                                   "Total" = 2),
-                        name = "Model") +
-  # scale_color_discrete_sequential(palette = "Grays",
-  #                                 name = "Model",
-  #                                 l1 = 30,
-  #                                 l2 = 60) +
-  # scale_fill_discrete_sequential(palette = "Grays",
-  #                                name = "Model",
-  #                                l1 = 30,
-  #                                l2 = 60) +
-  labs(y = "SAR",
-       x = "SD RKM of Redds")
-
-sd_rkm_p2 <-
-  predict_gam(gam_mod_2c,
-              length_out = 50,
-              series = "sd_rkm",
-              tran_fun = exp) |>
-  rename(rps = total_rps) |> 
-  mutate(model = "Total") |> 
-  bind_rows(predict_gam(gam_mod_2d,
-                        length_out = 50,
-                        series = "sd_rkm",
-                        tran_fun = exp) |> 
-              rename(rps = adult_rps) |> 
-              mutate(model = "Adult")) |> 
-  ggplot(aes(x = sd_rkm,
-             y = rps,
-             linetype = model,
-             color = model,
-             fill = model)) + 
-  geom_ribbon(aes(ymin = lower_ci,
-                  ymax = upper_ci),
-              color = NA,
-              alpha = 0.3) +
-  geom_point() +
-  geom_line() +
-  scale_color_discrete_qualitative(palette = colorspace_palette,
-                                   name = "Model") +
-  scale_fill_discrete_qualitative(palette = colorspace_palette,
-                                  name = "Model") +  
-  scale_linetype_manual(values = c("Adult" = 1,
-                                   "Total" = 2),
-                        name = "Model") +
-  # coord_cartesian(ylim = c(0, 2.5)) +
-  labs(y = "Returns /\nSpawner",
-       x = "SD RKM of Redds")
-
 ```
 
 ```{r ricker-plots}
@@ -1793,9 +1283,6 @@ rs_rick_p1 <-
                   ymax = upper_ci),
               color = NA,
               alpha = 0.3) +
-  # geom_abline(linetype = 3,
-  #             linewidth = 1.5,
-  #             color = "black") +
   geom_line(linewidth = 2) +
   geom_vline(xintercept = ret_capacity$spawners,
              linetype = 2,
@@ -1812,17 +1299,6 @@ rs_rick_p1 <-
   scale_linetype_manual(values = c("Adult" = 1,
                                    "Total" = 2),
                         name = "Model") +
-  # scale_color_discrete_sequential(palette = "Grays",
-  #                                 name = "Model",
-  #                                 l1 = 30,
-  #                                 l2 = 60) +
-  # scale_fill_discrete_sequential(palette = "Grays",
-  #                                name = "Model",
-  #                                l1 = 30,
-  #                                l2 = 60) +
-  # scale_y_continuous(labels = scales::label_comma(),
-  #                    limits = c(0, 1000)) +
-  # coord_cartesian(ylim = c(0, 600)) +
   labs(x = "Spawners",
        y = "Returns")
 
@@ -1862,40 +1338,8 @@ rs_rick_p2 <-
   scale_linetype_manual(values = c("Adult" = 1,
                                    "Total" = 2),
                         name = "Model") +
-  # scale_color_discrete_sequential(palette = "Grays",
-  #                                 name = "Model",
-  #                                 l1 = 30,
-  #                                 l2 = 60) +
-  # scale_fill_discrete_sequential(palette = "Grays",
-  #                                name = "Model",
-  #                                l1 = 30,
-  #                                l2 = 60) +
-  # scale_y_continuous(trans = "log",
-  #                    breaks = scales::breaks_pretty()) +
   labs(x = "Spawners",
        y = "Returns / Spawner")
-
-
-# predict_gam(gam_mod_2c,
-#             series = "redds",
-#             values = list(redds = seq(0, 600, by = 5)),
-#             tran_fun = exp) |>
-#   rename(rps = total_rps) |>
-#   mutate(model = "Total") |>
-#   bind_rows(predict_gam(gam_mod_2d,
-#                         series = "redds",
-#                         values = list(redds = seq(0, 600, by = 5)),
-#                         tran_fun = exp) |>
-#               rename(rps = adult_rps) |>
-#               mutate(model = "Adult")) |>
-#   mutate(recruits = rps * redds,
-#          across(ends_with("ci"),
-#                 ~ . * redds)) |>
-#   group_by(model) |>
-#   filter(recruits == max(recruits)) |>
-#   ungroup()
-
-
   
 ```
 
