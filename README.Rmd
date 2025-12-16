@@ -17,6 +17,9 @@ Title <- "Examination of Selected Factors Affecting Survival and Productivity of
 # TucSpChnkProductivity
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/KevinSee/TucSpChnkProductivity/master?urlpath=rstudio)
+<!-- add DOI Zenodo link -->
+[![DOI](https://zenodo.org/badge/995709252.svg)](https://doi.org/10.5281/zenodo.17957316)
+
 
 This repository contains the data and code for our paper:
 

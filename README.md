@@ -4,6 +4,8 @@
 # TucSpChnkProductivity
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/KevinSee/TucSpChnkProductivity/master?urlpath=rstudio)
+<!-- add DOI Zenodo link -->
+[![DOI](https://zenodo.org/badge/995709252.svg)](https://doi.org/10.5281/zenodo.17957316)
 
 This repository contains the data and code for our paper:
 
@@ -17,7 +19,7 @@ Our pre-print is online here:
 > Gallinat, M.P. and K.E. See, (2025). *Examination of Selected Factors
 > Affecting Survival and Productivity of Tucannon River Spring Chinook
 > Salmon and Implications for the Future*. Name of journal/book,
-> Accessed 03 Jun 2025. Online at <https://doi.org/xxx/xxx>
+> Accessed 16 Dec 2025. Online at <https://doi.org/xxx/xxx>
 
 ### How to cite
 
@@ -26,7 +28,7 @@ Please cite this compendium as:
 > Gallinat, M.P. and K.E. See, (2025). *Compendium of R code and data
 > for Examination of Selected Factors Affecting Survival and
 > Productivity of Tucannon River Spring Chinook Salmon and Implications
-> for the Future*. Accessed 03 Jun 2025. Online at
+> for the Future*. Accessed 16 Dec 2025. Online at
 > <https://doi.org/xxx/xxx>
 
 ## Contents
@@ -73,10 +75,3 @@ console
 
 **Data :** [CC-0](http://creativecommons.org/publicdomain/zero/1.0/)
 attribution requested in reuse
-
-### Contributions
-
-We welcome contributions from everyone. Before you get started, please
-see our [contributor guidelines](CONTRIBUTING.md). Please note that this
-project is released with a [Contributor Code of Conduct](CONDUCT.md). By
-participating in this project you agree to abide by its terms.
